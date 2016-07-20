@@ -177,6 +177,9 @@ func reset() {
 		cactus[i] = newCactus(i, 0)
 	}
 	dragon = newDragon()
+	loadError = nil
+	saveError = nil
+	saved = false
 	state = MAINMENU
 }
 
@@ -280,6 +283,8 @@ func evInGame(ev sdl.Event) {
 			fire(FIREBALL)
 		case sdl.K_i:
 			toggleInvincible()
+		case sdl.K_r:
+			state = MAINMENU
 		}
 
 	case sdl.ControllerButtonDownEvent:
@@ -291,12 +296,14 @@ func evInGame(ev sdl.Event) {
 			up()
 		case sdl.CONTROLLER_BUTTON_DPAD_DOWN:
 			down()
-		case sdl.CONTROLLER_BUTTON_X, sdl.CONTROLLER_BUTTON_A:
+		case sdl.CONTROLLER_BUTTON_A:
 			fire(SHOTGLASS)
-		case sdl.CONTROLLER_BUTTON_Y, sdl.CONTROLLER_BUTTON_B:
+		case sdl.CONTROLLER_BUTTON_B:
 			fire(FIREBALL)
-		case sdl.CONTROLLER_BUTTON_LEFTSHOULDER:
+		case sdl.CONTROLLER_BUTTON_X:
 			toggleInvincible()
+		case sdl.CONTROLLER_BUTTON_Y:
+			state = MAINMENU
 		}
 	}
 }
@@ -322,6 +329,8 @@ func evPause(ev sdl.Event) {
 			state = INGAME
 		case sdl.K_s:
 			save()
+		case sdl.K_r:
+			state = MAINMENU
 		}
 
 	case sdl.ControllerButtonDownEvent:
@@ -329,8 +338,10 @@ func evPause(ev sdl.Event) {
 		switch button {
 		case sdl.CONTROLLER_BUTTON_START:
 			state = INGAME
-		case sdl.CONTROLLER_BUTTON_LEFTSTICK:
+		case sdl.CONTROLLER_BUTTON_X:
 			save()
+		case sdl.CONTROLLER_BUTTON_Y:
+			state = MAINMENU
 		}
 	}
 }
@@ -621,7 +632,7 @@ func saveGame() error {
 
 func loadGame() error {
 	name := filepath.Join(conf.pref, "savedgame")
-	f, err := os.Create(name)
+	f, err := os.Open(name)
 	if err != nil {
 		return err
 	}
