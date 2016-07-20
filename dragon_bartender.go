@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/qeedquan/go-media/image/imageutil"
 	"github.com/qeedquan/go-media/sdl"
@@ -170,6 +171,7 @@ func loadAssets() {
 }
 
 func reset() {
+	rand.Seed(time.Now().UnixNano())
 	stat.Reset()
 	for i := range cactus {
 		cactus[i] = newCactus(i, 0)
