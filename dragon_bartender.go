@@ -70,6 +70,7 @@ var (
 
 	state       int
 	cursor      int
+	axisDelay   uint32
 	stat        Stat
 	dragon      *Dragon
 	projectiles []*Projectile
@@ -140,6 +141,8 @@ func initSDL() {
 
 	fps.Init()
 	fps.SetRate(60)
+
+	axisDelay = sdl.GetTicks()
 }
 
 func mapControllers() {
@@ -232,6 +235,19 @@ func evMainMenu(ev sdl.Event) {
 			sdl.CONTROLLER_BUTTON_A, sdl.CONTROLLER_BUTTON_B:
 			enter()
 		}
+
+	case sdl.ControllerAxisEvent:
+		if ev.Timestamp-axisDelay < 100 {
+			return
+		}
+		axisDelay = ev.Timestamp
+		const threshold = 1000
+		switch {
+		case sdl.GameControllerAxis(ev.Axis) == sdl.CONTROLLER_AXIS_LEFTY && ev.Value < -threshold:
+			up()
+		case sdl.GameControllerAxis(ev.Axis) == sdl.CONTROLLER_AXIS_LEFTY && ev.Value > threshold:
+			down()
+		}
 	}
 }
 
@@ -304,6 +320,19 @@ func evInGame(ev sdl.Event) {
 			toggleInvincible()
 		case sdl.CONTROLLER_BUTTON_Y:
 			state = MAINMENU
+		}
+
+	case sdl.ControllerAxisEvent:
+		if ev.Timestamp-axisDelay < 50 {
+			return
+		}
+		axisDelay = ev.Timestamp
+		const threshold = 1000
+		switch {
+		case sdl.GameControllerAxis(ev.Axis) == sdl.CONTROLLER_AXIS_LEFTY && ev.Value < -threshold:
+			up()
+		case sdl.GameControllerAxis(ev.Axis) == sdl.CONTROLLER_AXIS_LEFTY && ev.Value > threshold:
+			down()
 		}
 	}
 }
