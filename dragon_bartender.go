@@ -741,7 +741,7 @@ func loadImage(name string) *Image {
 		return img
 	}
 
-	rgba, err := imageutil.LoadFile(name)
+	rgba, err := imageutil.LoadRGBAFile(name)
 	ck(err)
 	rgba = imageutil.ColorKey(rgba, PINK)
 
@@ -762,7 +762,7 @@ func loadFont(name string, ptSize int) *sdlttf.Font {
 
 func setIcon(name string) {
 	name = filepath.Join(conf.assets, name)
-	rgba, err := imageutil.LoadFile(name)
+	rgba, err := imageutil.LoadRGBAFile(name)
 	if ek(err) {
 		return
 	}
